@@ -49,6 +49,7 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/snowgem"
 	"github.com/trezor/blockbook/bchain/coins/unobtanium"
 	"github.com/trezor/blockbook/bchain/coins/verge"
+	"github.com/trezor/blockbook/bchain/coins/rdd"
 	"github.com/trezor/blockbook/bchain/coins/vertcoin"
 	"github.com/trezor/blockbook/bchain/coins/viacoin"
 	"github.com/trezor/blockbook/bchain/coins/vipstarcoin"
@@ -130,6 +131,8 @@ func init() {
 	BlockChainFactories["Creamcoin"] = creamcoin.NewCreamCoinRPC
 	BlockChainFactories["Komodo"] = kmd.NewKmdRPC
 	BlockChainFactories["Aryacoin"] = aryacoin.NewAryaCoinRPC
+	BlockChainFactories["Reddcoin"] = rdd.NewReddRPC
+	BlockChainFactories["Reddcoin Testnet"] = rdd.NewReddRPC
 }
 
 // GetCoinNameFromConfig gets coin name and coin shortcut from config file

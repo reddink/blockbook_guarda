@@ -441,6 +441,9 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"isOwnAddress":             isOwnAddress,
 		"isOwnAddresses":           isOwnAddresses,
 		"addressEquals":            addressEquals,
+		"ToUpper": 					strings.ToUpper,
+		"ToLower": 					strings.ToLower,
+		"normalizeName": 			normalizeName,
 	}
 	var createTemplate func(filenames ...string) *template.Template
 	if s.debug {
@@ -555,6 +558,12 @@ func isOwnAddresses(td *TemplateData, addresses []string) bool {
 		return isOwnAddress(td, addresses[0])
 	}
 	return false
+}
+
+func normalizeName(s string) string {
+	s = strings.ToLower(s)
+	s = strings.ReplaceAll(s, " ", "-")
+	return s
 }
 
 func (s *PublicServer) explorerTx(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error) {
