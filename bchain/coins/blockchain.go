@@ -47,6 +47,7 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/ravencoin"
 	"github.com/trezor/blockbook/bchain/coins/ritocoin"
 	"github.com/trezor/blockbook/bchain/coins/snowgem"
+	"github.com/trezor/blockbook/bchain/coins/trezarcoin"
 	"github.com/trezor/blockbook/bchain/coins/unobtanium"
 	"github.com/trezor/blockbook/bchain/coins/verge"
 	"github.com/trezor/blockbook/bchain/coins/rdd"
@@ -66,6 +67,8 @@ var BlockChainFactories = make(map[string]blockChainFactory)
 
 func init() {
 	BlockChainFactories["Bitcoin"] = btc.NewBitcoinRPC
+	BlockChainFactories["Testnet"] = btc.NewBitcoinRPC
+	BlockChainFactories["Signet"] = btc.NewBitcoinRPC
 	BlockChainFactories["BcashSV"] = bch.NewBCashRPC
 	BlockChainFactories["BcashSV Testnet"] = bch.NewBCashRPC
 	BlockChainFactories["BitcoinTestnet"] = btc.NewBitcoinRPC
@@ -79,6 +82,7 @@ func init() {
 	BlockChainFactories["BcashABC"] = bch.NewBCashRPC
 	BlockChainFactories["Bcash Testnet"] = bch.NewBCashRPC
 	BlockChainFactories["Bgold"] = btg.NewBGoldRPC
+	BlockChainFactories["Bgold Testnet"] = btg.NewBGoldRPC
 	BlockChainFactories["Dash"] = dash.NewDashRPC
 	BlockChainFactories["Dash Testnet"] = dash.NewDashRPC
 	BlockChainFactories["Decred"] = dcr.NewDecredRPC
@@ -127,6 +131,7 @@ func init() {
 	BlockChainFactories["Omotenashicoin"] = omotenashicoin.NewOmotenashiCoinRPC
 	BlockChainFactories["Omotenashicoin Testnet"] = omotenashicoin.NewOmotenashiCoinRPC
 	BlockChainFactories["BitZeny"] = bitzeny.NewBitZenyRPC
+	BlockChainFactories["Trezarcoin"] = trezarcoin.NewTrezarcoinRPC
 	BlockChainFactories["Ycash"] = yec.NewYCashRPC
 	BlockChainFactories["Creamcoin"] = creamcoin.NewCreamCoinRPC
 	BlockChainFactories["Komodo"] = kmd.NewKmdRPC
