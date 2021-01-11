@@ -440,6 +440,10 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"setTxToTemplateData":      setTxToTemplateData,
 		"isOwnAddress":             isOwnAddress,
 		"isOwnAddresses":           isOwnAddresses,
+		"addressEquals":            addressEquals,
+		"ToUpper": 					strings.ToUpper,
+		"ToLower": 					strings.ToLower,
+		"normalizeName": 			normalizeName,
 	}
 	var createTemplate func(filenames ...string) *template.Template
 	if s.debug {
@@ -507,6 +511,10 @@ func formatTime(t time.Time) string {
 	return t.Format(time.RFC1123)
 }
 
+func addressEquals(addresses []string, value string) bool {
+	return len(addresses) == 1 && addresses[0] == value
+}
+
 // for now return the string as it is
 // in future could be used to do coin specific formatting
 func (s *PublicServer) formatAmount(a *api.Amount) string {
@@ -550,6 +558,12 @@ func isOwnAddresses(td *TemplateData, addresses []string) bool {
 		return isOwnAddress(td, addresses[0])
 	}
 	return false
+}
+
+func normalizeName(s string) string {
+	s = strings.ToLower(s)
+	s = strings.ReplaceAll(s, " ", "-")
+	return s
 }
 
 func (s *PublicServer) explorerTx(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error) {
