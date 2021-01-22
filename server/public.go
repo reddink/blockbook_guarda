@@ -518,6 +518,8 @@ func toJSON(data interface{}) string {
 		return ""
 	}
 	return string(json)
+}
+
 func addressEquals(addresses []string, value string) bool {
 	return len(addresses) == 1 && addresses[0] == value
 }
