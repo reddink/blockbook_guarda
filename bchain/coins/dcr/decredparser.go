@@ -10,11 +10,11 @@ import (
 	"strconv"
 
 	"github.com/decred/dcrd/chaincfg/chainhash"
-	cfg "github.com/decred/dcrd/chaincfg/v2"
+	cfg "github.com/decred/dcrd/chaincfg/v3"
 	"github.com/decred/dcrd/dcrec"
-	"github.com/decred/dcrd/dcrutil/v2"
-	"github.com/decred/dcrd/hdkeychain/v2"
-	"github.com/decred/dcrd/txscript/v2"
+	"github.com/decred/dcrd/dcrutil/v3"
+	"github.com/decred/dcrd/hdkeychain/v3"
+	"github.com/decred/dcrd/txscript/v3"
 	"github.com/juju/errors"
 	"github.com/martinboehm/btcd/wire"
 	"github.com/martinboehm/btcutil/base58"
@@ -205,7 +205,9 @@ func (p *DecredParser) GetAddrDescFromVout(output *bchain.Vout) (bchain.AddressD
 	}
 
 	const scriptVersion = 0
-	scriptClass, addresses, _, err := txscript.ExtractPkScriptAddrs(scriptVersion, script, p.netConfig)
+	const treasuryEnabled = true
+	scriptClass, addresses, _, err := txscript.ExtractPkScriptAddrs(scriptVersion, script,
+		p.netConfig, treasuryEnabled)
 	if err != nil {
 		return nil, err
 	}
@@ -243,11 +245,8 @@ func (p *DecredParser) UnpackTx(buf []byte) (*bchain.Tx, uint32, error) {
 }
 
 func (p *DecredParser) addrDescFromExtKey(extKey *hdkeychain.ExtendedKey) (bchain.AddressDescriptor, error) {
-	pk, err := extKey.ECPubKey()
-	if err != nil {
-		return nil, err
-	}
-	hash := dcrutil.Hash160(pk.SerializeCompressed())
+	pk := extKey.SerializedPubKey()
+	hash := dcrutil.Hash160(pk)
 	addr, err := dcrutil.NewAddressPubKeyHash(hash, p.netConfig, dcrec.STEcdsaSecp256k1)
 	if err != nil {
 		return nil, err

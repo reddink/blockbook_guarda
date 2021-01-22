@@ -440,6 +440,7 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"setTxToTemplateData":      setTxToTemplateData,
 		"isOwnAddress":             isOwnAddress,
 		"isOwnAddresses":           isOwnAddresses,
+		"toJSON":                   toJSON,
 		"addressEquals":            addressEquals,
 		"ToUpper": 					strings.ToUpper,
 		"ToLower": 					strings.ToLower,
@@ -511,6 +512,12 @@ func formatTime(t time.Time) string {
 	return t.Format(time.RFC1123)
 }
 
+func toJSON(data interface{}) string {
+	json, err := json.Marshal(data)
+	if err != nil {
+		return ""
+	}
+	return string(json)
 func addressEquals(addresses []string, value string) bool {
 	return len(addresses) == 1 && addresses[0] == value
 }

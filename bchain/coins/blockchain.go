@@ -27,6 +27,7 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/divi"
 	"github.com/trezor/blockbook/bchain/coins/dogecoin"
 	"github.com/trezor/blockbook/bchain/coins/eth"
+	"github.com/trezor/blockbook/bchain/coins/firo"
 	"github.com/trezor/blockbook/bchain/coins/flo"
 	"github.com/trezor/blockbook/bchain/coins/fujicoin"
 	"github.com/trezor/blockbook/bchain/coins/gamecredits"
@@ -54,7 +55,6 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/vertcoin"
 	"github.com/trezor/blockbook/bchain/coins/viacoin"
 	"github.com/trezor/blockbook/bchain/coins/vipstarcoin"
-	"github.com/trezor/blockbook/bchain/coins/firo"
 	"github.com/trezor/blockbook/bchain/coins/zec"
 	"github.com/trezor/blockbook/bchain/coins/yec"
 	"github.com/trezor/blockbook/common"
@@ -77,6 +77,7 @@ func init() {
 	BlockChainFactories["Ethereum"] = eth.NewEthereumRPC
 	BlockChainFactories["Ethereum Classic"] = eth.NewEthereumRPC
 	BlockChainFactories["Ethereum Testnet Ropsten"] = eth.NewEthereumRPC
+	BlockChainFactories["Ethereum Testnet Goerli"] = eth.NewEthereumRPC
 	BlockChainFactories["Expanse"] = eth.NewEthereumRPC
 	BlockChainFactories["Bcash"] = bch.NewBCashRPC
 	BlockChainFactories["BcashABC"] = bch.NewBCashRPC

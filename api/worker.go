@@ -1845,7 +1845,7 @@ func (w *Worker) GetSystemInfo(internal bool) (*SystemInfo, error) {
 		DbColumns:         columnStats,
 		About:             Text.BlockbookAbout,
 	}
-	backendInfo := &BackendInfo{
+	backendInfo := &common.BackendInfo{
 		BackendError:    backendError,
 		BestBlockHash:   ci.Bestblockhash,
 		Blocks:          ci.Blocks,
@@ -1860,6 +1860,7 @@ func (w *Worker) GetSystemInfo(internal bool) (*SystemInfo, error) {
 		Warnings:        ci.Warnings,
 		Consensus:       ci.Consensus,
 	}
+	w.is.SetBackendInfo(backendInfo)
 	glog.Info("GetSystemInfo finished in ", time.Since(start))
 	return &SystemInfo{blockbookInfo, backendInfo}, nil
 }
