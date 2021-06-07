@@ -350,7 +350,7 @@ func (s *PublicServer) newTemplateDataWithError(text string) *TemplateData {
 func (s *PublicServer) htmlTemplateHandler(handler func(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error)) func(w http.ResponseWriter, r *http.Request) {
 	handlerName := getFunctionName(handler)
 	return func(w http.ResponseWriter, r *http.Request) {
-		hostURL = r.Host
+		hostURL = r.Host + r.URL.Path
 		var t tpl
 		var data *TemplateData
 		var err error
