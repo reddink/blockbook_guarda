@@ -260,7 +260,7 @@ func joinURL(base string, part string) string {
 }
 
 func getHostURL() string {
-	glog.Infof("Server request host:", hostURL)
+	glog.Info("Server request host: ", hostURL)
 	return hostURL
 }
 
