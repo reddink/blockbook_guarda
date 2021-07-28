@@ -27,6 +27,7 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/divi"
 	"github.com/trezor/blockbook/bchain/coins/dogecoin"
 	"github.com/trezor/blockbook/bchain/coins/bitcoinvault"
+	"github.com/trezor/blockbook/bchain/coins/ecash"
 	"github.com/trezor/blockbook/bchain/coins/eth"
 	"github.com/trezor/blockbook/bchain/coins/firo"
 	"github.com/trezor/blockbook/bchain/coins/flo"
@@ -83,6 +84,7 @@ func init() {
 	BlockChainFactories["Bcash"] = bch.NewBCashRPC
 	BlockChainFactories["BcashABC"] = bch.NewBCashRPC
 	BlockChainFactories["Bcash Testnet"] = bch.NewBCashRPC
+	BlockChainFactories["eCash"] = ecash.NewECashRPC
 	BlockChainFactories["Bgold"] = btg.NewBGoldRPC
 	BlockChainFactories["Bgold Testnet"] = btg.NewBGoldRPC
 	BlockChainFactories["Dash"] = dash.NewDashRPC
