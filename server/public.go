@@ -106,6 +106,7 @@ func NewPublicServer(binding string, certFiles string, db *db.RocksDB, chain bch
 
 	// map only basic functions, the rest is enabled by method MapFullPublicInterface
 	serveMux.Handle(path+"favicon.ico", http.FileServer(http.Dir("./static/")))
+	serveMux.Handle(path+"robots.txt", http.FileServer(http.Dir("./static/")))
 	serveMux.Handle(path+"static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 	// default handler
 	serveMux.HandleFunc(path, s.htmlTemplateHandler(s.explorerIndex))
