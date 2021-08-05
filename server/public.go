@@ -56,6 +56,8 @@ type PublicServer struct {
 	debug            bool
 }
 
+var hostURL string = ""
+
 // NewPublicServer creates new public server http interface to blockbook and returns its handle
 // only basic functionality is mapped, to map all functions, call
 func NewPublicServer(binding string, certFiles string, db *db.RocksDB, chain bchain.BlockChain, mempool bchain.Mempool, txCache *db.TxCache, explorerURL string, metrics *common.Metrics, is *common.InternalState, debugMode bool, enableSubNewTx bool) (*PublicServer, error) {
@@ -257,6 +259,11 @@ func joinURL(base string, part string) string {
 	return part
 }
 
+func getHostURL() string {
+	glog.Info("Server request host: ", hostURL)
+	return hostURL
+}
+
 func getFunctionName(i interface{}) string {
 	name := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 	start := strings.LastIndex(name, ".")
@@ -343,6 +350,7 @@ func (s *PublicServer) newTemplateDataWithError(text string) *TemplateData {
 func (s *PublicServer) htmlTemplateHandler(handler func(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error)) func(w http.ResponseWriter, r *http.Request) {
 	handlerName := getFunctionName(handler)
 	return func(w http.ResponseWriter, r *http.Request) {
+		hostURL = r.Host + r.URL.Path
 		var t tpl
 		var data *TemplateData
 		var err error
@@ -453,6 +461,11 @@ func (s *PublicServer) parseTemplates() []*template.Template {
 		"isOwnAddress":             isOwnAddress,
 		"isOwnAddresses":           isOwnAddresses,
 		"toJSON":                   toJSON,
+		"addressEquals":            addressEquals,
+		"ToUpper": 					strings.ToUpper,
+		"ToLower": 					strings.ToLower,
+		"normalizeName": 			normalizeName,
+		"getHostURL":				getHostURL,
 	}
 	var createTemplate func(filenames ...string) *template.Template
 	if s.debug {
@@ -528,6 +541,10 @@ func toJSON(data interface{}) string {
 	return string(json)
 }
 
+func addressEquals(addresses []string, value string) bool {
+	return len(addresses) == 1 && addresses[0] == value
+}
+
 // for now return the string as it is
 // in future could be used to do coin specific formatting
 func (s *PublicServer) formatAmount(a *api.Amount) string {
@@ -571,6 +588,12 @@ func isOwnAddresses(td *TemplateData, addresses []string) bool {
 		return isOwnAddress(td, addresses[0])
 	}
 	return false
+}
+
+func normalizeName(s string) string {
+	s = strings.ToLower(s)
+	s = strings.ReplaceAll(s, " ", "-")
+	return s
 }
 
 func (s *PublicServer) explorerTx(w http.ResponseWriter, r *http.Request) (tpl, *TemplateData, error) {
