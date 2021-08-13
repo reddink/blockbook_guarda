@@ -45,6 +45,7 @@
 | Omotenashicoin         | 9094                    | 9194                  | 8094             | 38394                       |
 | BitZeny                | 9095                    | 9195                  | 8095             | 38395                       |
 | Trezarcoin             | 9096                    | 9196                  | 8096             | 38396                       |
+| Bitcoin Vault          | 9097                    | 9197                  | 8097             | 38397                       |
 | Bitcoin Signet         | 19020                   | 19120                 | 18020            | 48320                       |
 | Bitcoin Regtest        | 19021                   | 19121                 | 18021            | 48321                       |
 | Ethereum Goerli        | 19026                   | 19126                 | 18026            | 48326 p2p                   |
