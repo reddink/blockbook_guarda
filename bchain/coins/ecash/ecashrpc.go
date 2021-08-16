@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/martinboehm/bchutil"
+	"github.com/guardaco/ecashutil"
 	"github.com/trezor/blockbook/bchain"
 	"github.com/trezor/blockbook/bchain/coins/btc"
 )
@@ -50,7 +50,7 @@ func (b *ECashRPC) Initialize() error {
 	}
 
 	// parameters for getInfo request
-	if params.Net == bchutil.MainnetMagic {
+	if params.Net == ecashutil.MainnetMagic {
 		b.Testnet = false
 		b.Network = "livenet"
 	} else {

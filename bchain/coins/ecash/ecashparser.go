@@ -3,7 +3,7 @@ package ecash
 import (
 	"fmt"
 
-	"github.com/martinboehm/bchutil"
+	"github.com/guardaco/ecashutil"
 	"github.com/martinboehm/btcutil"
 	"github.com/martinboehm/btcutil/chaincfg"
 	"github.com/martinboehm/btcutil/txscript"
@@ -42,13 +42,13 @@ var (
 
 func init() {
 	MainNetParams = chaincfg.MainNetParams
-	MainNetParams.Net = bchutil.MainnetMagic
+	MainNetParams.Net = ecashutil.MainnetMagic
 
 	TestNetParams = chaincfg.TestNet3Params
-	TestNetParams.Net = bchutil.TestnetMagic
+	TestNetParams.Net = ecashutil.TestnetMagic
 
 	RegtestParams = chaincfg.RegressionNetParams
-	RegtestParams.Net = bchutil.Regtestmagic
+	RegtestParams.Net = ecashutil.Regtestmagic
 }
 
 // ECashParser handle
@@ -112,11 +112,11 @@ func (p *ECashParser) GetAddrDescFromAddress(address string) (bchain.AddressDesc
 // addressToOutputScript converts bitcoin address to ScriptPubKey
 func (p *ECashParser) addressToOutputScript(address string) ([]byte, error) {
 	if isCashAddr(address) {
-		da, err := bchutil.DecodeAddress(address, p.Params)
+		da, err := ecashutil.DecodeAddress(address, p.Params)
 		if err != nil {
 			return nil, err
 		}
-		script, err := bchutil.PayToAddrScript(da)
+		script, err := ecashutil.PayToAddrScript(da)
 		if err != nil {
 			return nil, err
 		}
@@ -149,13 +149,13 @@ func isCashAddr(addr string) bool {
 
 // outputScriptToAddresses converts ScriptPubKey to bitcoin addresses
 func (p *ECashParser) outputScriptToAddresses(script []byte) ([]string, bool, error) {
-	// convert possible P2PK script to P2PK, which bchutil can process
+	// convert possible P2PK script to P2PK, which ecashutil can process
 	var err error
 	script, err = txscript.ConvertP2PKtoP2PKH(p.Params.Base58CksumHasher, script)
 	if err != nil {
 		return nil, false, err
 	}
-	a, err := bchutil.ExtractPkScriptAddrs(script, p.Params)
+	a, err := ecashutil.ExtractPkScriptAddrs(script, p.Params)
 	if err != nil {
 		// do not return unknown script type error as error
 		if err.Error() == "unknown script type" {
