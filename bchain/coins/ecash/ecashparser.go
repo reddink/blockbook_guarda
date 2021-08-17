@@ -74,6 +74,7 @@ func NewECashParser(params *chaincfg.Params, c *btc.Configuration) (*ECashParser
 		BitcoinParser: btc.NewBitcoinParser(params, c),
 		AddressFormat: format,
 	}
+	p.BitcoinParser.BaseParser.AmountDecimalPoint = 2;
 	p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
 	return p, nil
 }
