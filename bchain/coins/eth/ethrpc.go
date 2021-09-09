@@ -31,7 +31,13 @@ const (
 	TestNet EthereumNet = 3
 	// TestNetGoerli is Goerli test network
 	TestNetGoerli EthereumNet = 5
+	// 	MainNetUbiq is Ubiq prodoction network
+	MainNetUbiq EthereumNet = 8
+	// TestNetUbiq is Ubiq test network
+	TestNetUbiq EthereumNet = 9
 )
+
+var MainNetIds = map[int]bool{1: true, 8: true}
 
 // Configuration represents json config file
 type Configuration struct {
@@ -165,6 +171,14 @@ func (b *EthereumRPC) Initialize() error {
 	case TestNetGoerli:
 		b.Testnet = true
 		b.Network = "goerli"
+		break
+	case TestNetUbiq:
+		b.Testnet = true
+		b.Network = "testnet"
+		break
+	case MainNetUbiq:
+		b.Testnet = false
+		b.Network = "livenet"
 	default:
 		return errors.Errorf("Unknown network id %v", id)
 	}
@@ -351,7 +365,7 @@ func (b *EthereumRPC) GetChainInfo() (*bchain.ChainInfo, error) {
 		Version:       ver,
 	}
 	idi := int(id.Uint64())
-	if idi == 1 {
+	if _, ok := MainNetIds[idi]; ok {
 		rv.Chain = "mainnet"
 	} else {
 		rv.Chain = "testnet " + strconv.Itoa(idi)
