@@ -43,12 +43,12 @@ func init() {
 
 // BitcoinvaultParser handle
 type BitcoinvaultParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 }
 
 // NewBitcoinvaultParser returns new BitcoinvaultParser instance
 func NewBitcoinvaultParser(params *chaincfg.Params, c *btc.Configuration) *BitcoinvaultParser {
-	return &BitcoinvaultParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+	return &BitcoinvaultParser{BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c)}
 }
 
 // GetChainParams contains network parameters for the main Bitcoinvault network,

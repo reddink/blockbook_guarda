@@ -153,14 +153,14 @@ func init() {
 
 // ReddParser handle
 type ReddParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 	baseparser *bchain.BaseParser
 }
 
 // NewReddParser returns new ReddParser instance
 func NewReddParser(params *chaincfg.Params, c *btc.Configuration) *ReddParser {
 	return &ReddParser{
-		BitcoinParser: btc.NewBitcoinParser(params, c),
+		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
 		baseparser:    &bchain.BaseParser{},
 	}
 }

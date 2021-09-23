@@ -53,7 +53,7 @@ func init() {
 
 // ECashParser handle
 type ECashParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 	AddressFormat AddressFormat
 }
 
@@ -71,7 +71,7 @@ func NewECashParser(params *chaincfg.Params, c *btc.Configuration) (*ECashParser
 		return nil, fmt.Errorf("Unknown address format: %s", c.AddressFormat)
 	}
 	p := &ECashParser{
-		BitcoinParser: btc.NewBitcoinParser(params, c),
+		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
 		AddressFormat: format,
 	}
 	p.AmountDecimalPoint = 2;
