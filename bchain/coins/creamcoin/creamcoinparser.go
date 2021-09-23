@@ -35,12 +35,12 @@ func init() {
 
 // CreamCoinParser handle
 type CreamCoinParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 }
 
 // NewCreamCoinParser returns new CreamCoinParser instance
 func NewCreamCoinParser(params *chaincfg.Params, c *btc.Configuration) *CreamCoinParser {
-	return &CreamCoinParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+	return &CreamCoinParser{BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c)}
 }
 
 // GetChainParams contains network parameters for the main CreamCoin network,

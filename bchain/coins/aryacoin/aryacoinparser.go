@@ -35,12 +35,12 @@ func init() {
 
 // AryaCoinParser handle
 type AryaCoinParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 }
 
 // NewAryaCoinParser returns new AryaCoinParser instance
 func NewAryaCoinParser(params *chaincfg.Params, c *btc.Configuration) *AryaCoinParser {
-	return &AryaCoinParser{BitcoinParser: btc.NewBitcoinParser(params, c)}
+	return &AryaCoinParser{BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c)}
 }
 
 // GetChainParams contains network parameters for the main AryaCoin network,

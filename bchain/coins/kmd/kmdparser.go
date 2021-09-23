@@ -48,14 +48,14 @@ func init() {
 
 // KmdParser handle
 type KmdParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 	baseparser *bchain.BaseParser
 }
 
 // NewKmdParser returns new KmdParser instance
 func NewKmdParser(params *chaincfg.Params, c *btc.Configuration) *KmdParser {
 	return &KmdParser{
-		BitcoinParser: btc.NewBitcoinParser(params, c),
+		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
 		baseparser:    &bchain.BaseParser{},
 	}
 }

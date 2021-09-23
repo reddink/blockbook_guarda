@@ -49,14 +49,14 @@ func init() {
 
 // ZCashParser handle
 type YCashParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 	baseparser *bchain.BaseParser
 }
 
 // NewZCashParser returns new ZCashParser instance
 func NewYCashParser(params *chaincfg.Params, c *btc.Configuration) *YCashParser {
 	return &YCashParser{
-		BitcoinParser: btc.NewBitcoinParser(params, c),
+		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
 		baseparser:    &bchain.BaseParser{},
 	}
 }

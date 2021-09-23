@@ -28,14 +28,14 @@ func init() {
 
 // VergeParser handle
 type VergeParser struct {
-	*btc.BitcoinParser
+	*btc.BitcoinLikeParser
 	baseparser *bchain.BaseParser
 }
 
 // NewVergeParser returns new VergeParser instance
 func NewVergeParser(params *chaincfg.Params, c *btc.Configuration) *VergeParser {
 	return &VergeParser{
-		BitcoinParser: btc.NewBitcoinParser(params, c),
+		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
 		baseparser: &bchain.BaseParser{
 			AmountDecimalPoint: 6,
 		},
