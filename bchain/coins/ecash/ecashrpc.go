@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/juju/errors"
-	"github.com/guardaco/ecashutil"
+	"github.com/pirk/ecashutil"
 	"github.com/trezor/blockbook/bchain"
 	"github.com/trezor/blockbook/bchain/coins/btc"
 )
@@ -95,7 +95,8 @@ func (b *ECashRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := b.GetBlockRaw(hash)
+	data, err := b.GetBlockBytes(hash)
+
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (b *ECashRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 }
 
 // GetBlockRaw returns block with given hash as bytes.
-func (b *ECashRPC) GetBlockRaw(hash string) ([]byte, error) {
+func (b *ECashRPC) GetBlockRaw(hash string) (string, error) {
 	glog.V(1).Info("rpc: getblock (verbose=0) ", hash)
 
 	res := btc.ResGetBlockRaw{}
@@ -121,15 +122,24 @@ func (b *ECashRPC) GetBlockRaw(hash string) ([]byte, error) {
 	err := b.Call(&req, &res)
 
 	if err != nil {
-		return nil, errors.Annotatef(err, "hash %v", hash)
+		return "", errors.Annotatef(err, "hash %v", hash)
 	}
 	if res.Error != nil {
 		if isErrBlockNotFound(res.Error) {
-			return nil, bchain.ErrBlockNotFound
+			return "", bchain.ErrBlockNotFound
 		}
-		return nil, errors.Annotatef(res.Error, "hash %v", hash)
+		return "", errors.Annotatef(res.Error, "hash %v", hash)
 	}
-	return hex.DecodeString(res.Result)
+	return res.Result, nil
+}
+
+// GetBlockBytes returns block with given hash as bytes
+func (b *ECashRPC) GetBlockBytes(hash string) ([]byte, error) {
+	block, err := b.GetBlockRaw(hash)
+	if err != nil {
+		return nil, err
+	}
+	return hex.DecodeString(block)
 }
 
 // GetBlockInfo returns extended header (more info than in bchain.BlockHeader) with a list of txids
@@ -166,11 +176,6 @@ func isErrBlockNotFound(err *bchain.RPCError) bool {
 
 // EstimateFee returns fee estimation
 func (b *ECashRPC) EstimateFee(blocks int) (big.Int, error) {
-	//  from version BitcoinABC version 0.19.1 EstimateFee does not support parameter Blocks
-	if b.ChainConfig.CoinShortcut == "BCHSV" {
-		return b.BitcoinRPC.EstimateFee(blocks)
-	}
-
 	glog.V(1).Info("rpc: estimatefee ", blocks)
 
 	res := btc.ResEstimateFee{}
@@ -198,6 +203,6 @@ func (b *ECashRPC) EstimateFee(blocks int) (big.Int, error) {
 
 // EstimateSmartFee returns fee estimation
 func (b *ECashRPC) EstimateSmartFee(blocks int, conservative bool) (big.Int, error) {
-	// EstimateSmartFee is not supported by ECash
+	// EstimateSmartFee is not supported by ecash
 	return b.EstimateFee(blocks)
 }

@@ -3,11 +3,11 @@ package ecash
 import (
 	"fmt"
 
-	"github.com/guardaco/ecashutil"
+	"github.com/pirk/ecashutil"
 	"github.com/martinboehm/btcutil"
 	"github.com/martinboehm/btcutil/chaincfg"
 	"github.com/martinboehm/btcutil/txscript"
-	"github.com/schancel/cashaddr-converter/address"
+	"github.com/pirk/ecashaddr-converter/address"
 	"github.com/trezor/blockbook/bchain"
 	"github.com/trezor/blockbook/bchain/coins/btc"
 )
@@ -18,7 +18,7 @@ type AddressFormat = uint8
 const (
 	// Legacy AddressFormat is the same as Bitcoin
 	Legacy AddressFormat = iota
-	// CashAddr AddressFormat is new Bitcoin Cash standard
+	// CashAddr AddressFormat is new eCash standard
 	CashAddr
 )
 
@@ -26,9 +26,9 @@ const (
 	// MainNetPrefix is CashAddr prefix for mainnet
 	MainNetPrefix = "ecash:"
 	// TestNetPrefix is CashAddr prefix for testnet
-	TestNetPrefix = "ecashtest:"
+	TestNetPrefix = "ectest:"
 	// RegTestPrefix is CashAddr prefix for regtest
-	RegTestPrefix = "ecashreg:"
+	RegTestPrefix = "ecreg:"
 )
 
 var (
@@ -72,16 +72,16 @@ func NewECashParser(params *chaincfg.Params, c *btc.Configuration) (*ECashParser
 	}
 	p := &ECashParser{
 		BitcoinLikeParser: btc.NewBitcoinLikeParser(params, c),
-		AddressFormat: format,
+		AddressFormat:     format,
 	}
-	p.AmountDecimalPoint = 2;
 	p.OutputScriptToAddressesFunc = p.outputScriptToAddresses
+	p.AmountDecimalPoint = 2
 	return p, nil
 }
 
-// GetChainParams contains network parameters for the main Bitcoin Cash network,
-// the regression test Bitcoin Cash network, the test Bitcoin Cash network and
-// the simulation test Bitcoin Cash network, in this order
+// GetChainParams contains network parameters for the main eCash network,
+// the regression test eCash network, the test eCash network and
+// the simulation test eCash network, in this order
 func GetChainParams(chain string) *chaincfg.Params {
 	if !chaincfg.IsRegistered(&MainNetParams) {
 		err := chaincfg.Register(&MainNetParams)
@@ -110,7 +110,7 @@ func (p *ECashParser) GetAddrDescFromAddress(address string) (bchain.AddressDesc
 	return p.addressToOutputScript(address)
 }
 
-// addressToOutputScript converts bitcoin address to ScriptPubKey
+// addressToOutputScript converts address to ScriptPubKey
 func (p *ECashParser) addressToOutputScript(address string) ([]byte, error) {
 	if isCashAddr(address) {
 		da, err := ecashutil.DecodeAddress(address, p.Params)
