@@ -99,6 +99,19 @@ func (w *Worker) setSpendingTxToVout(vout *Vout, txid string, height uint32) err
 
 // GetSpendingTxid returns transaction id of transaction that spent given output
 func (w *Worker) GetSpendingTxid(txid string, n int) (string, error) {
+	if w.db.HasSpendingIndex() {
+		tsp, err := w.db.GetTxAddresses(txid)
+		if err != nil {
+			return "", err
+		} else if tsp == nil {
+			glog.Warning("DB inconsistency:  tx ", txid, ": not found in txAddresses")
+			return "", NewAPIError(fmt.Sprintf("Txid %v not found", txid), false)
+		}
+		if n >= len(tsp.Outputs) || n < 0 {
+			return "", NewAPIError(fmt.Sprintf("Passed incorrect vout index %v for tx %v, len vout %v", n, txid, len(tsp.Outputs)), false)
+		}
+		return tsp.Outputs[n].SpentTxid, nil
+	}
 	start := time.Now()
 	tx, err := w.GetTransaction(txid, false, false)
 	if err != nil {
@@ -150,6 +163,7 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 	var pValInSat *big.Int
 	vins := make([]Vin, len(bchainTx.Vin))
 	rbf := false
+	var rawTxForInputValues *bchain.TxForInValues
 	for i := range bchainTx.Vin {
 		bchainVin := &bchainTx.Vin[i]
 		vin := &vins[i]
@@ -213,6 +227,28 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 				if vin.ValueSat != nil {
 					valInSat.Add(&valInSat, (*big.Int)(vin.ValueSat))
 				}
+			} else {
+				vin.AddrDesc = w.chainParser.GetAddrDescForUnknownInput(bchainTx, i)
+				vin.Addresses, vin.IsAddress, err = w.chainParser.GetAddressesFromAddrDesc(vin.AddrDesc)
+				if rawTxForInputValues == nil {
+					rawTxJSON, err := w.chain.GetTransactionSpecific(bchainTx)
+					if err != nil {
+						glog.Error("Can't retrieve raw transaction with id ", bchainTx.Txid, ":", err)
+					}
+					if rawTxJSON != nil {
+						rawTxForInputValues = &bchain.TxForInValues{Vin: make([]bchain.VinValues, 0)}
+						err = json.Unmarshal(rawTxJSON, rawTxForInputValues)
+					}
+				}
+				if rawTxForInputValues != nil && rawTxForInputValues.Vin != nil && len(rawTxForInputValues.Vin) > i {
+					inputValue, err := w.chainParser.AmountToBigInt(rawTxForInputValues.Vin[i].Value)
+					if err == nil && inputValue.Cmp(big.NewInt(0)) != 0 {
+						vin.ValueSat = (*Amount)(&inputValue)
+						if vin.ValueSat != nil {
+							valInSat.Add(&valInSat, (*big.Int)(vin.ValueSat))
+						}
+					}
+				}
 			}
 		} else if w.chainType == bchain.ChainEthereumType {
 			if len(bchainVin.Addresses) > 0 {
@@ -239,10 +275,16 @@ func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spe
 		}
 		if ta != nil {
 			vout.Spent = ta.Outputs[i].Spent
-			if spendingTxs && vout.Spent {
-				err = w.setSpendingTxToVout(vout, bchainTx.Txid, uint32(height))
-				if err != nil {
-					glog.Errorf("setSpendingTxToVout error %v, %v, output %v", err, vout.AddrDesc, vout.N)
+			if vout.Spent {
+				if w.db.HasSpendingIndex() {
+					vout.SpentTxID = ta.Outputs[i].SpentTxid
+					vout.SpentIndex = int(ta.Outputs[i].SpentIndex)
+					vout.SpentHeight = int(ta.Outputs[i].SpentHeight)
+				} else if spendingTxs {
+					err = w.setSpendingTxToVout(vout, bchainTx.Txid, uint32(height))
+					if err != nil {
+						glog.Errorf("setSpendingTxToVout error %v, %v, output %v", err, vout.AddrDesc, vout.N)
+					}
 				}
 			}
 		}
@@ -553,6 +595,7 @@ func (w *Worker) txFromTxAddress(txid string, ta *db.TxAddresses, bi *db.BlockIn
 	var err error
 	var valInSat, valOutSat, feesSat big.Int
 	vins := make([]Vin, len(ta.Inputs))
+	var rawTxForInputValues *bchain.TxForInValues
 	for i := range ta.Inputs {
 		tai := &ta.Inputs[i]
 		vin := &vins[i]
@@ -561,7 +604,30 @@ func (w *Worker) txFromTxAddress(txid string, ta *db.TxAddresses, bi *db.BlockIn
 		valInSat.Add(&valInSat, &tai.ValueSat)
 		vin.Addresses, vin.IsAddress, err = tai.Addresses(w.chainParser)
 		if err != nil {
-			glog.Errorf("tai.Addresses error %v, tx %v, input %v, tai %+v", err, txid, i, tai)
+			//glog.Errorf("tai.Addresses error %v, tx %v, input %v, tai %+v", err, txid, i, tai)
+		} else {
+			if vin.Txid == "" {
+				if rawTxForInputValues == nil {
+					bchainTx, err := w.chain.GetTransaction(txid)
+					rawTxJSON, err := w.chain.GetTransactionSpecific(bchainTx)
+					if err != nil {
+						glog.Error("Can't retrieve raw transaction with id ", txid, ":", err)
+					}
+					if rawTxJSON != nil {
+						rawTxForInputValues = &bchain.TxForInValues{Vin: make([]bchain.VinValues, 0)}
+						err = json.Unmarshal(rawTxJSON, rawTxForInputValues)
+					}
+				}
+				if rawTxForInputValues != nil && rawTxForInputValues.Vin != nil && len(rawTxForInputValues.Vin) > i {
+					inputValue, err := w.chainParser.AmountToBigInt(rawTxForInputValues.Vin[i].Value)
+					if err == nil && inputValue.Cmp(big.NewInt(0)) != 0 {
+						vin.ValueSat = (*Amount)(&inputValue)
+						if vin.ValueSat != nil {
+							valInSat.Add(&valInSat, (*big.Int)(vin.ValueSat))
+						}
+					}
+				}
+			}
 		}
 	}
 	vouts := make([]Vout, len(ta.Outputs))
@@ -576,6 +642,11 @@ func (w *Worker) txFromTxAddress(txid string, ta *db.TxAddresses, bi *db.BlockIn
 			glog.Errorf("tai.Addresses error %v, tx %v, output %v, tao %+v", err, txid, i, tao)
 		}
 		vout.Spent = tao.Spent
+		if w.db.HasSpendingIndex() {
+			vout.SpentTxID = tao.SpentTxid
+			vout.SpentIndex = int(tao.SpentIndex)
+			vout.SpentHeight = int(tao.SpentHeight)
+		}
 	}
 	// for coinbase transactions valIn is 0
 	feesSat.Sub(&valInSat, &valOutSat)
@@ -1252,6 +1323,7 @@ func (w *Worker) getAddrDescUtxo(addrDesc bchain.AddressDescriptor, ba *db.AddrB
 									AmountSat: (*Amount)(&vout.ValueSat),
 									Locktime:  bchainTx.LockTime,
 									Coinbase:  coinbase,
+									ScriptPubKey: vout.ScriptPubKey.Hex,
 								})
 								inMempool[bchainTx.Txid] = struct{}{}
 							}
@@ -1299,6 +1371,14 @@ func (w *Worker) getAddrDescUtxo(addrDesc bchain.AddressDescriptor, ba *db.AddrB
 							coinbase = true
 						}
 					}
+					bchainTx, height, err := w.txCache.GetTransaction(txid)
+					if err != nil {
+						if err == bchain.ErrTxNotFound {
+							return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found", txid), true)
+						}
+						return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found (%v)", txid, err), true)
+					}
+					transaction, err := w.GetTransactionFromBchainTx(bchainTx, height, false, false)
 					_, e = inMempool[txid]
 					if !e {
 						utxos = append(utxos, Utxo{
@@ -1308,6 +1388,7 @@ func (w *Worker) getAddrDescUtxo(addrDesc bchain.AddressDescriptor, ba *db.AddrB
 							Height:        int(utxo.Height),
 							Confirmations: confirmations,
 							Coinbase:      coinbase,
+							ScriptPubKey:  transaction.Vout[utxo.Vout].Hex,
 						})
 					}
 				}

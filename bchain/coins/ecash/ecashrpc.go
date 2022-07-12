@@ -96,6 +96,7 @@ func (b *ECashRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 		return nil, err
 	}
 	data, err := b.GetBlockBytes(hash)
+
 	if err != nil {
 		return nil, err
 	}

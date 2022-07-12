@@ -501,6 +501,7 @@ func (d *DecredRPC) GetBlockHeader(hash string) (*bchain.BlockHeader, error) {
 func (d *DecredRPC) GetBlock(hash string, height uint32) (*bchain.Block, error) {
 	// Confirm if the block at provided height has at least 2 confirming blocks.
 	d.mtx.Lock()
+
 	if height > d.bestBlock {
 		bestBlock, err := d.getBestBlock()
 		if err != nil || height > bestBlock.Result.Height {
