@@ -93,10 +93,12 @@ func setupRocksDB(parser bchain.BlockChainParser, chain bchain.BlockChain, t *te
 	return d, is, tmp
 }
 
+
 var metrics *common.Metrics
 
 func setupPublicHTTPServer(parser bchain.BlockChainParser, chain bchain.BlockChain, t *testing.T, extendedIndex bool) (*PublicServer, string) {
 	d, is, path := setupRocksDB(parser, chain, t, extendedIndex)
+
 	// setup internal state and match BestHeight to test data
 	is.Coin = "Fakecoin"
 	is.CoinLabel = "Fake Coin"

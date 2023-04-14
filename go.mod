@@ -18,6 +18,7 @@ require (
 	github.com/golang/glog v1.0.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/websocket v1.4.2
+	github.com/guardaco/ecashutil v0.0.0-20210816143015-caab501c7560 // indirect
 	github.com/juju/errors v0.0.0-20170703010042-c7d06af17c68
 	github.com/linxGnu/grocksdb v1.7.7
 	github.com/martinboehm/bchutil v0.0.0-20190104112650-6373f11b6efe
