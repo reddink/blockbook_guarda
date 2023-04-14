@@ -1,5 +1,4 @@
 # Registry of ports
-
 | coin                   | blockbook internal port | blockbook public port | backend rpc port | backend service ports (zmq) |
 |------------------------|-------------------------|-----------------------|------------------|-----------------------------|
 | Bitcoin                | 9030                    | 9130                  | 8030             | 38330                       |
