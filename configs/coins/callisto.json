@@ -24,7 +24,7 @@
       "version": "1.9.11-6a62fe39",
       "binary_url": "https://github.com/EthereumCommonwealth/go-callisto/archive/refs/tags/1.10.13-Release.tar.gz",
       "verification_type": "sha256",
-      "verification_source": "4d4099c3ef9e3d21b7701ba422702097ed2c2ef97de2e87115d24c1777c159ad",
+      "verification_source": "ac7663240f38b41f92b7b69557062892259cad541700aad88d6c955166f3ea3b",
       "extract_command": "tar -C backend --strip 1 -xf",
       "exclude_files": [],
       "exec_command_template": "/bin/sh -c '{{.Env.BackendInstallPath}}/{{.Coin.Alias}}/geth --ipcdisable --syncmode full --cache 1024 --nat none --datadir {{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend --port 38336 --ws --wsaddr 0.0.0.0 --wsport {{.Ports.BackendRPC}} --wsorigins \"*\" --rpc --rpcport 8136 -rpcaddr 0.0.0.0 --rpccorsdomain \"*\" --rpcvhosts \"*\" 2>>{{.Env.BackendDataPath}}/{{.Coin.Alias}}/backend/{{.Coin.Alias}}.log'",
